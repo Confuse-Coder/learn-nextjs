@@ -1,4 +1,5 @@
-import { Box, Button, Flex, FormControl, Spinner, useToast } from '@chakra-ui/react';
+import { Box, Button, Flex, Spinner, useToast, Link } from '@chakra-ui/react';
+import NextLink from 'next/link';
 import { Formik, Form, FormikHelpers } from 'formik';
 import { useRouter } from 'next/router';
 import InputField from '../components/InputField';
@@ -15,7 +16,7 @@ const Login = () => {
 
   const initialValues: LoginInput = { usernameOrEmail: '', password: '' };
 
-  const [loginUser, { loading: _loginUserLoading, data, error }] = useLoginMutation();
+  const [loginUser, { loading: _loginUserLoading, error }] = useLoginMutation();
 
   const toast = useToast();
 
@@ -67,25 +68,30 @@ const Login = () => {
           <Formik initialValues={initialValues} onSubmit={onLoginSubmit}>
             {({ isSubmitting }) => (
               <Form>
-                <FormControl>
+                <InputField
+                  name="usernameOrEmail"
+                  placeholder="Username Or Email"
+                  label="Username Or Email"
+                  type="text"
+                />
+                <Box mt={4}>
                   <InputField
-                    name="usernameOrEmail"
-                    placeholder="Username Or Email"
-                    label="Username Or Email"
-                    type="text"
+                    name="password"
+                    placeholder="Password"
+                    label="Password"
+                    type="password"
                   />
-                  <Box mt={4}>
-                    <InputField
-                      name="password"
-                      placeholder="Password"
-                      label="Password"
-                      type="password"
-                    />
-                  </Box>
-                  <Button type="submit" colorScheme="teal" mt={4} isLoading={isSubmitting}>
-                    Login
-                  </Button>
-                </FormControl>
+                </Box>
+
+                <Flex mt={2}>
+                  <NextLink href="/forgot-password">
+                    <Link ml="auto">Forgot Password</Link>
+                  </NextLink>
+                </Flex>
+
+                <Button type="submit" colorScheme="teal" mt={4} isLoading={isSubmitting}>
+                  Login
+                </Button>
               </Form>
             )}
           </Formik>

@@ -1,5 +1,6 @@
 import { ChevronDownIcon, ChevronUpIcon } from '@chakra-ui/icons';
 import { Flex, IconButton } from '@chakra-ui/react';
+import { useRouter } from 'next/router';
 import { useState } from 'react';
 import { PostWithUserInfoFragment, useVoteMutation, VoteType } from '../generated/graphql';
 
@@ -21,7 +22,9 @@ const UpvoteSection = ({ post }: UpvoteSectionProps) => {
 
   const upvote = async (postId: string) => {
     setLoadingState('upvote-loading');
-    await vote({ variables: { inputVoteValue: VoteType.Upvote, postId: parseInt(postId) } });
+    await vote({
+      variables: { inputVoteValue: VoteType.Upvote, postId: parseInt(postId) },
+    });
     setLoadingState('not-loading');
   };
 

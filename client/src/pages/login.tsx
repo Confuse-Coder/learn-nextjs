@@ -8,6 +8,7 @@ import Wrapper from '../components/Wrapper';
 import { LoginInput, MeDocument, MeQuery, useLoginMutation } from '../generated/graphql';
 import { mapFieldErrors } from '../helpers/mapFieldErrors';
 import { useCheckAuth } from '../utils/useCheckAuth';
+import { initializeApollo } from '../lib/apolloClient';
 
 const Login = () => {
   const router = useRouter();
@@ -51,6 +52,10 @@ const Login = () => {
         duration: 3000,
         isClosable: true,
       });
+
+      const apolloClient = initializeApollo();
+      apolloClient.resetStore();
+
       router.push('/');
     }
   };

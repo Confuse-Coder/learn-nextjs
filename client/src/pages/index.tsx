@@ -1,18 +1,17 @@
-import { Box, Flex, Spinner, Stack, Link, Heading, Text, Button } from '@chakra-ui/react';
-import { PostsDocument, useMeQuery, usePostsQuery } from '../generated/graphql';
-import { addApolloState, initializeApollo } from '../lib/apolloClient';
+import { NetworkStatus } from '@apollo/client';
+import { Box, Button, Flex, Heading, Link, Spinner, Stack, Text } from '@chakra-ui/react';
+import { GetServerSideProps, GetServerSidePropsContext, GetStaticProps } from 'next';
 import NextLink from 'next/link';
 import Layout from '../components/Layout';
 import PostEditDeleteButtons from '../components/PostEditDeleteButtons';
-import { NetworkStatus } from '@apollo/client';
-import { GetStaticProps } from 'next';
+import UpvoteSection from '../components/UpvoteSection';
+import { PostsDocument, usePostsQuery } from '../generated/graphql';
+import { addApolloState, initializeApollo } from '../lib/apolloClient';
 
 export const limit = 3;
 
 const Index = () => {
-  const { data: meData } = useMeQuery();
-
-  const { data, loading, error, fetchMore, networkStatus } = usePostsQuery({
+  const { data, loading, fetchMore, networkStatus } = usePostsQuery({
     variables: { limit },
 
     // Component nao co render boi cai PostQuery , se rerender Component day khi NetworkStatusChange, tuc la fetch more
@@ -33,6 +32,7 @@ const Index = () => {
         <Stack spacing={8}>
           {data?.posts?.paginatedPosts.map((post) => (
             <Flex key={post.id} p={5} shadow="md" borderWidth="1px">
+              <UpvoteSection post={post} />
               <Box flex={1}>
                 <NextLink href={`/post/${post.id}`}>
                   <Link>
@@ -62,8 +62,10 @@ const Index = () => {
   );
 };
 
-export const getStaticProps: GetStaticProps = async () => {
-  const apolloClient = initializeApollo();
+export const getServerSideProps: GetServerSideProps = async (
+  context: GetServerSidePropsContext
+) => {
+  const apolloClient = initializeApollo({ headers: context.req.headers });
 
   await apolloClient.query({
     query: PostsDocument,

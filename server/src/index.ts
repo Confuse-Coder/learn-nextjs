@@ -16,16 +16,17 @@ import { COOKIE_NAME, __prod__ } from './constants';
 import { Context } from './types/Context';
 import { PostResolver } from './resolvers/post';
 import cors from 'cors';
+import { Upvote } from './entities/Upvote';
 
 const main = async () => {
-  await createConnection({
+  const connection = await createConnection({
     type: 'postgres',
     database: 'Reddit',
     username: process.env.DB_USERNAME_DEV,
     password: process.env.DB_PASSWORD_DEV,
     logging: true,
     synchronize: true,
-    entities: [User, Post],
+    entities: [User, Post, Upvote],
   });
 
   const app = express();
@@ -70,7 +71,7 @@ const main = async () => {
       validate: false,
     }),
     plugins: [ApolloServerPluginLandingPageGraphQLPlayground()],
-    context: ({ req, res }): Context => ({ req, res }),
+    context: ({ req, res }): Context => ({ req, res, connection }),
   });
 
   await apolloServer.start();

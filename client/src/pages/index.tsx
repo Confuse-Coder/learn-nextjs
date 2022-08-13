@@ -1,5 +1,5 @@
 import { Box, Flex, Spinner, Stack, Link, Heading, Text, Button } from '@chakra-ui/react';
-import { PostsDocument, usePostsQuery } from '../generated/graphql';
+import { PostsDocument, useMeQuery, usePostsQuery } from '../generated/graphql';
 import { addApolloState, initializeApollo } from '../lib/apolloClient';
 import NextLink from 'next/link';
 import Layout from '../components/Layout';
@@ -10,6 +10,8 @@ import { GetStaticProps } from 'next';
 export const limit = 3;
 
 const Index = () => {
+  const { data: meData } = useMeQuery();
+
   const { data, loading, error, fetchMore, networkStatus } = usePostsQuery({
     variables: { limit },
 
@@ -41,7 +43,7 @@ const Index = () => {
                 <Flex align="center">
                   <Text mt={4}>{post.textSnippet}</Text>
                   <Box ml="auto">
-                    <PostEditDeleteButtons />
+                    <PostEditDeleteButtons postId={post.id} postUserId={post.user.id} />
                   </Box>
                 </Flex>
               </Box>

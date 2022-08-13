@@ -1,4 +1,14 @@
-import { Alert, AlertIcon, AlertTitle, Box, Flex, Heading, Spinner } from '@chakra-ui/react';
+import {
+  Alert,
+  AlertIcon,
+  AlertTitle,
+  Box,
+  Button,
+  Flex,
+  Heading,
+  IconButton,
+  Spinner,
+} from '@chakra-ui/react';
 import { GetStaticPaths, GetStaticProps } from 'next';
 import { useRouter } from 'next/router';
 import Layout from '../../components/Layout';
@@ -11,31 +21,48 @@ import {
 } from '../../generated/graphql';
 import { addApolloState, initializeApollo } from '../../lib/apolloClient';
 import { limit } from '../index';
+import NextLink from 'next/link';
+import { EditIcon } from '@chakra-ui/icons';
+import PostEditDeleteButtons from '../../components/PostEditDeleteButtons';
 
 const Post = () => {
   const router = useRouter();
   const { data, loading, error } = usePostQuery({ variables: { id: router.query.id as string } });
 
+  if (loading)
+    return (
+      <Layout>
+        <Flex justifyContent="center" alignItems="center" minH="100vh">
+          <Spinner />
+        </Flex>
+      </Layout>
+    );
+
   if (error || !data?.post)
     return (
-      <Alert status="error">
-        <AlertIcon />
-        <AlertTitle>{error ? error.message : 'Post not found!'}</AlertTitle>
-      </Alert>
+      <Layout>
+        <Alert status="error">
+          <AlertIcon />
+          <AlertTitle>{error ? error.message : 'Post not found!'}</AlertTitle>
+        </Alert>
+        <Box mt={4}>
+          <NextLink href="/login">
+            <Button>Back to HomePage</Button>
+          </NextLink>
+        </Box>
+      </Layout>
     );
 
   return (
     <Layout>
-      {loading ? (
-        <Flex justifyContent="center" alignItems="center" minH="100vh">
-          <Spinner />
-        </Flex>
-      ) : (
-        <>
-          <Heading mb={4}>{data.post.title}</Heading>
-          <Box mb={4}>{data.post.text}</Box>
-        </>
-      )}
+      <Heading mb={4}>{data.post.title}</Heading>
+      <Box mb={4}>{data.post.text}</Box>
+      <Flex justifyContent="space-between" alignItems="center">
+        <PostEditDeleteButtons postId={data.post.id} postUserId={data.post.userId.toString()} />
+        <NextLink href="/">
+          <Button>Back to HomePage</Button>
+        </NextLink>
+      </Flex>
     </Layout>
   );
 };
